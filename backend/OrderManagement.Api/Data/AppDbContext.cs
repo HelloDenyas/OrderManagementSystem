@@ -5,6 +5,7 @@ namespace OrderManagement.Api.Data;
 
 public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(options)
 {
+    public DbSet<AdminUser> AdminUsers => Set<AdminUser>();
     public DbSet<Customer> Customers => Set<Customer>();
     public DbSet<Product> Products => Set<Product>();
     public DbSet<Order> Orders => Set<Order>();
@@ -12,6 +13,20 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        modelBuilder.Entity<AdminUser>(entity =>
+        {
+            entity.Property(adminUser => adminUser.Username)
+                .IsRequired()
+                .HasMaxLength(AdminUser.MaxUsernameLength);
+
+            entity.Property(adminUser => adminUser.PasswordHash)
+                .IsRequired()
+                .HasMaxLength(AdminUser.MaxPasswordHashLength);
+
+            entity.HasIndex(adminUser => adminUser.Username)
+                .IsUnique();
+        });
+
         modelBuilder.Entity<Order>(entity =>
         {
             entity.Property(order => order.Status)
