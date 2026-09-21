@@ -112,6 +112,17 @@ public class CustomersController(AppDbContext dbContext) : ControllerBase
             return NotFound();
         }
 
+        var isUsedInOrder = await dbContext.Orders
+            .AnyAsync(order => order.CustomerId == id, cancellationToken);
+
+        if (isUsedInOrder)
+        {
+            return Conflict(new
+            {
+                message = "The customer cannot be deleted because it is used in an order."
+            });
+        }
+
         dbContext.Customers.Remove(customer);
         await dbContext.SaveChangesAsync(cancellationToken);
 
