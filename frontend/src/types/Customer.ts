@@ -4,3 +4,5 @@ export type Customer = {
   email: string
   phone: string | null
 }
+
+export type CustomerPayload = Omit<Customer, 'id'>
