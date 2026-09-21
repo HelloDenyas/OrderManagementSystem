@@ -116,6 +116,17 @@ public class ProductsController(AppDbContext dbContext) : ControllerBase
             return NotFound();
         }
 
+        var isUsedInOrder = await dbContext.OrderItems
+            .AnyAsync(orderItem => orderItem.ProductId == id, cancellationToken);
+
+        if (isUsedInOrder)
+        {
+            return Conflict(new
+            {
+                message = "The product cannot be deleted because it is used in an order."
+            });
+        }
+
         dbContext.Products.Remove(product);
         await dbContext.SaveChangesAsync(cancellationToken);
 
