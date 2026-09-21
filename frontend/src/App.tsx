@@ -1,6 +1,7 @@
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
 import AdminLayout from './components/AdminLayout'
 import CustomersPage from './pages/CustomersPage'
+import ProductsPage from './pages/ProductsPage'
 import SectionPlaceholder from './pages/SectionPlaceholder'
 import './App.css'
 
@@ -11,15 +12,7 @@ function App() {
         <Route path="/" element={<AdminLayout />}>
           <Route index element={<Navigate to="/customers" replace />} />
           <Route path="customers" element={<CustomersPage />} />
-          <Route
-            path="products"
-            element={
-              <SectionPlaceholder
-                title="Prekės"
-                description="Prekių valdymo funkcijos bus įgyvendintos vėliau."
-              />
-            }
-          />
+          <Route path="products" element={<ProductsPage />} />
           <Route
             path="orders"
             element={
