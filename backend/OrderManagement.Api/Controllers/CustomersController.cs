@@ -49,9 +49,16 @@ public class CustomersController(AppDbContext dbContext) : ControllerBase
         CreateCustomerRequest request,
         CancellationToken cancellationToken)
     {
+        var name = request.Name?.Trim();
+        if (string.IsNullOrEmpty(name))
+        {
+            ModelState.AddModelError(nameof(request.Name), "Name is required and cannot contain only whitespace.");
+            return ValidationProblem(ModelState);
+        }
+
         var customer = new Customer
         {
-            Name = request.Name.Trim(),
+            Name = name,
             Email = request.Email.Trim(),
             Phone = string.IsNullOrWhiteSpace(request.Phone) ? null : request.Phone.Trim()
         };
@@ -68,6 +75,13 @@ public class CustomersController(AppDbContext dbContext) : ControllerBase
         UpdateCustomerRequest request,
         CancellationToken cancellationToken)
     {
+        var name = request.Name?.Trim();
+        if (string.IsNullOrEmpty(name))
+        {
+            ModelState.AddModelError(nameof(request.Name), "Name is required and cannot contain only whitespace.");
+            return ValidationProblem(ModelState);
+        }
+
         var customer = await dbContext.Customers
             .SingleOrDefaultAsync(customer => customer.Id == id, cancellationToken);
 
@@ -76,7 +90,7 @@ public class CustomersController(AppDbContext dbContext) : ControllerBase
             return NotFound();
         }
 
-        customer.Name = request.Name.Trim();
+        customer.Name = name;
         customer.Email = request.Email.Trim();
         customer.Phone = string.IsNullOrWhiteSpace(request.Phone) ? null : request.Phone.Trim();
 
