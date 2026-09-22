@@ -7,6 +7,8 @@ public class Customer
     public const int MaxNameLength = 200;
     public const int MaxEmailLength = 254;
     public const int MaxPhoneLength = 50;
+    public const string NamePattern = @"^(?=.*\p{L})[\p{L}\p{M} '\u2019-]+$";
+    public const string PhonePattern = @"^(?:\s*|\+?(?=[0-9 ()-]*[0-9])[0-9 ()-]+)$";
 
     public int Id { get; set; }
 
