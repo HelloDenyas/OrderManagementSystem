@@ -1,4 +1,6 @@
 import { useEffect, useState } from 'react'
+import EmptyState from '../components/EmptyState'
+import LoadingState from '../components/LoadingState'
 import ProductForm from '../components/ProductForm'
 import type { Product, ProductPayload } from '../types/Product'
 
@@ -225,10 +227,7 @@ function ProductsPage() {
 
         <div className="customers-content" aria-live="polite">
           {isLoading ? (
-            <div className="table-message">
-              <span className="loading-indicator" aria-hidden="true" />
-              <p>Kraunamos prekės...</p>
-            </div>
+            <LoadingState message="Kraunamos prekės..." />
           ) : error ? (
             <div className="table-message table-message-error">
               <p>{error}</p>
@@ -237,13 +236,18 @@ function ProductsPage() {
               </button>
             </div>
           ) : products.length === 0 ? (
-            <div className="table-message">
-              <p>
-                {debouncedSearch
-                  ? 'Pagal jūsų paiešką prekių nerasta.'
-                  : 'Prekių sąrašas šiuo metu tuščias.'}
-              </p>
-            </div>
+            <EmptyState
+              title={
+                debouncedSearch
+                  ? 'Pagal paiešką prekių nerasta.'
+                  : 'Prekių nėra.'
+              }
+              description={
+                debouncedSearch
+                  ? 'Pakeiskite paieškos žodį ir bandykite dar kartą.'
+                  : 'Sukurkite pirmą prekę paspausdami „Nauja prekė“.'
+              }
+            />
           ) : (
             <div className="table-wrapper">
               <table className="customers-table">

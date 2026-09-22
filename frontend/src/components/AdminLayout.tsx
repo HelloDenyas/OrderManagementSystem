@@ -3,6 +3,7 @@ import { NavLink, Outlet, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/useAuth'
 
 const navigationItems = [
+  { label: 'Apžvalga', path: '/dashboard' },
   { label: 'Klientai', path: '/customers' },
   { label: 'Prekės', path: '/products' },
   { label: 'Užsakymai', path: '/orders' },
