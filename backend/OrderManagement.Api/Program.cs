@@ -59,3 +59,7 @@ app.MapControllers();
 await AdminUserSeeder.SeedAsync(app.Services, app.Configuration);
 
 app.Run();
+
+public partial class Program
+{
+}
