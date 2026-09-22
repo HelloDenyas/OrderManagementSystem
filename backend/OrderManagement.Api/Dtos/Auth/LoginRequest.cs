@@ -10,5 +10,6 @@ public class LoginRequest
     public string Username { get; set; } = string.Empty;
 
     [Required]
+    [MaxLength(AdminUser.MaxPasswordLength)]
     public string Password { get; set; } = string.Empty;
 }

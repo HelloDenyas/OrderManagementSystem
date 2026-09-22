@@ -115,9 +115,16 @@ function OrderForm({
     lines.forEach((line) => {
       const error: LineError = {}
       const quantity = Number(line.quantity)
+      const selectedProduct = products.find(
+        (product) => String(product.id) === line.productId,
+      )
 
       if (!line.productId) {
         error.productId = 'Pasirinkite prekę.'
+      } else if (!selectedProduct) {
+        error.productId = 'Pasirinkta prekė nebegalima.'
+      } else if (selectedProduct.stockQuantity <= 0) {
+        error.productId = 'Šios prekės sandėlyje nėra.'
       } else {
         selectedProductIds.push(line.productId)
       }
@@ -126,6 +133,8 @@ function OrderForm({
         error.quantity = 'Įveskite kiekį.'
       } else if (!Number.isInteger(quantity) || quantity < 1) {
         error.quantity = 'Kiekis turi būti sveikasis skaičius, ne mažesnis nei 1.'
+      } else if (selectedProduct && quantity > selectedProduct.stockQuantity) {
+        error.quantity = `Sandėlyje yra tik ${selectedProduct.stockQuantity} vnt.`
       }
 
       if (error.productId || error.quantity) {
@@ -247,6 +256,9 @@ function OrderForm({
             <div className="order-lines">
               {lines.map((line, index) => {
                 const error = lineErrors[line.id]
+                const selectedProduct = products.find(
+                  (product) => String(product.id) === line.productId,
+                )
 
                 return (
                   <div className="order-line" key={line.id}>
@@ -267,13 +279,19 @@ function OrderForm({
                           <option
                             key={product.id}
                             value={product.id}
-                            disabled={lines.some(
-                              (otherLine) =>
-                                otherLine.id !== line.id &&
-                                otherLine.productId === String(product.id),
-                            )}
+                            disabled={
+                              product.stockQuantity <= 0 ||
+                              lines.some(
+                                (otherLine) =>
+                                  otherLine.id !== line.id &&
+                                  otherLine.productId === String(product.id),
+                              )
+                            }
                           >
-                            {product.name} — {priceFormatter.format(product.price)}
+                            {product.name} — {priceFormatter.format(product.price)} —{' '}
+                            {product.stockQuantity > 0
+                              ? `Sandėlyje: ${product.stockQuantity}`
+                              : 'Nėra sandėlyje'}
                           </option>
                         ))}
                       </select>
@@ -288,6 +306,7 @@ function OrderForm({
                         id={`order-quantity-${line.id}`}
                         type="number"
                         min="1"
+                        max={selectedProduct?.stockQuantity}
                         step="1"
                         value={line.quantity}
                         onChange={(event) =>

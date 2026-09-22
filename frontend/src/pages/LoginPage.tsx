@@ -102,6 +102,7 @@ function LoginPage() {
               autoComplete="username"
               autoFocus
               required
+              maxLength={100}
               value={username}
               onChange={(event) => {
                 setUsername(event.target.value)
@@ -127,6 +128,7 @@ function LoginPage() {
               type="password"
               autoComplete="current-password"
               required
+              maxLength={128}
               value={password}
               onChange={(event) => {
                 setPassword(event.target.value)

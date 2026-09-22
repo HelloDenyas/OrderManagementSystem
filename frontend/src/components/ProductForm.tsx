@@ -50,6 +50,8 @@ function ProductForm({
       nextErrors.price = 'Įveskite prekės kainą.'
     } else if (!Number.isFinite(parsedPrice) || parsedPrice < 0) {
       nextErrors.price = 'Kaina turi būti skaičius, ne mažesnis nei 0.'
+    } else if (!/^\d+(?:\.\d{1,2})?$/.test(trimmedPrice)) {
+      nextErrors.price = 'Kaina negali turėti daugiau nei dviejų skaitmenų po kablelio.'
     }
 
     if (!trimmedStockQuantity) {

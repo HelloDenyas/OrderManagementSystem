@@ -27,6 +27,12 @@ public static class AdminUserSeeder
                 $"The configured admin username cannot exceed {AdminUser.MaxUsernameLength} characters.");
         }
 
+        if (configuredPassword.Length > AdminUser.MaxPasswordLength)
+        {
+            throw new InvalidOperationException(
+                $"The configured admin password cannot exceed {AdminUser.MaxPasswordLength} characters.");
+        }
+
         using var scope = services.CreateScope();
         var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
 

@@ -54,7 +54,7 @@ public class ProductsController(AppDbContext dbContext) : ControllerBase
         var name = request.Name?.Trim();
         var category = request.Category?.Trim();
 
-        if (!ValidateRequiredText(name, category))
+        if (!ValidateProductValues(name, category, request.Price, request.StockQuantity))
         {
             return ValidationProblem(ModelState);
         }
@@ -62,8 +62,8 @@ public class ProductsController(AppDbContext dbContext) : ControllerBase
         var product = new Product
         {
             Name = name!,
-            Price = request.Price,
-            StockQuantity = request.StockQuantity,
+            Price = request.Price.GetValueOrDefault(),
+            StockQuantity = request.StockQuantity.GetValueOrDefault(),
             Category = category!
         };
 
@@ -82,7 +82,7 @@ public class ProductsController(AppDbContext dbContext) : ControllerBase
         var name = request.Name?.Trim();
         var category = request.Category?.Trim();
 
-        if (!ValidateRequiredText(name, category))
+        if (!ValidateProductValues(name, category, request.Price, request.StockQuantity))
         {
             return ValidationProblem(ModelState);
         }
@@ -96,8 +96,8 @@ public class ProductsController(AppDbContext dbContext) : ControllerBase
         }
 
         product.Name = name!;
-        product.Price = request.Price;
-        product.StockQuantity = request.StockQuantity;
+        product.Price = request.Price.GetValueOrDefault();
+        product.StockQuantity = request.StockQuantity.GetValueOrDefault();
         product.Category = category!;
 
         await dbContext.SaveChangesAsync(cancellationToken);
@@ -135,7 +135,11 @@ public class ProductsController(AppDbContext dbContext) : ControllerBase
         return NoContent();
     }
 
-    private bool ValidateRequiredText(string? name, string? category)
+    private bool ValidateProductValues(
+        string? name,
+        string? category,
+        decimal? price,
+        int? stockQuantity)
     {
         if (string.IsNullOrEmpty(name))
         {
@@ -147,6 +151,25 @@ public class ProductsController(AppDbContext dbContext) : ControllerBase
             ModelState.AddModelError(nameof(Product.Category), "Category is required and cannot contain only whitespace.");
         }
 
+        if (price is null)
+        {
+            ModelState.AddModelError(nameof(Product.Price), "Price is required.");
+        }
+        else if (GetDecimalPlaces(price.Value) > 2)
+        {
+            ModelState.AddModelError(nameof(Product.Price), "Price cannot have more than two decimal places.");
+        }
+
+        if (stockQuantity is null)
+        {
+            ModelState.AddModelError(nameof(Product.StockQuantity), "Stock quantity is required.");
+        }
+
         return ModelState.IsValid;
+    }
+
+    private static int GetDecimalPlaces(decimal value)
+    {
+        return (decimal.GetBits(value)[3] >> 16) & 0x7F;
     }
 }

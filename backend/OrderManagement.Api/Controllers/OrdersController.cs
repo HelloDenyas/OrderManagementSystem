@@ -101,6 +101,23 @@ public class OrdersController(AppDbContext dbContext) : ControllerBase
             return ValidationProblem(ModelState);
         }
 
+        foreach (var item in request.Items)
+        {
+            var product = products[item.ProductId];
+
+            if (item.Quantity > product.StockQuantity)
+            {
+                ModelState.AddModelError(
+                    nameof(request.Items),
+                    $"Insufficient stock for product '{product.Name}'. Available quantity: {product.StockQuantity}.");
+            }
+        }
+
+        if (!ModelState.IsValid)
+        {
+            return ValidationProblem(ModelState);
+        }
+
         var orderItems = request.Items
             .Select(item => new OrderItem
             {
