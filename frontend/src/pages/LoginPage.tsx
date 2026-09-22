@@ -27,7 +27,7 @@ function LoginPage() {
   }
 
   if (user) {
-    return <Navigate to="/customers" replace />
+    return <Navigate to="/dashboard" replace />
   }
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
@@ -55,7 +55,7 @@ function LoginPage() {
 
     try {
       await login({ username: trimmedUsername, password })
-      navigate('/customers', { replace: true })
+      navigate('/dashboard', { replace: true })
     } catch (error) {
       if (error instanceof AuthApiError && error.reason === 'invalid-credentials') {
         setLoginError('Neteisingas naudotojo vardas arba slaptažodis.')

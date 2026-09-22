@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react'
 import CustomerForm from '../components/CustomerForm'
+import EmptyState from '../components/EmptyState'
+import LoadingState from '../components/LoadingState'
 import type { Customer, CustomerPayload } from '../types/Customer'
 
 type Notification = {
@@ -220,10 +222,7 @@ function CustomersPage() {
 
         <div className="customers-content" aria-live="polite">
           {isLoading ? (
-            <div className="table-message">
-              <span className="loading-indicator" aria-hidden="true" />
-              <p>Kraunami klientai...</p>
-            </div>
+            <LoadingState message="Kraunami klientai..." />
           ) : error ? (
             <div className="table-message table-message-error">
               <p>{error}</p>
@@ -232,13 +231,18 @@ function CustomersPage() {
               </button>
             </div>
           ) : customers.length === 0 ? (
-            <div className="table-message">
-              <p>
-                {debouncedSearch
-                  ? 'Pagal jūsų paiešką klientų nerasta.'
-                  : 'Klientų sąrašas šiuo metu tuščias.'}
-              </p>
-            </div>
+            <EmptyState
+              title={
+                debouncedSearch
+                  ? 'Pagal paiešką klientų nerasta.'
+                  : 'Klientų nerasta.'
+              }
+              description={
+                debouncedSearch
+                  ? 'Pakeiskite paieškos žodį ir bandykite dar kartą.'
+                  : 'Sukurkite pirmą klientą paspausdami „Naujas klientas“.'
+              }
+            />
           ) : (
             <div className="table-wrapper">
               <table className="customers-table">

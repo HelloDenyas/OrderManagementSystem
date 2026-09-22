@@ -1,5 +1,8 @@
 import { useEffect, useState } from 'react'
+import EmptyState from '../components/EmptyState'
+import LoadingState from '../components/LoadingState'
 import OrderForm from '../components/OrderForm'
+import StatusBadge from '../components/StatusBadge'
 import type { Customer } from '../types/Customer'
 import {
   ORDER_STATUSES,
@@ -251,10 +254,7 @@ function OrdersPage() {
 
       <div className="orders-content" aria-live="polite">
         {isLoading ? (
-          <div className="orders-state">
-            <span className="loading-indicator" aria-hidden="true" />
-            <p>Kraunami užsakymai...</p>
-          </div>
+          <LoadingState message="Kraunami užsakymai..." />
         ) : error ? (
           <div className="orders-state table-message-error">
             <p>{error}</p>
@@ -263,9 +263,10 @@ function OrdersPage() {
             </button>
           </div>
         ) : orders.length === 0 ? (
-          <div className="orders-state">
-            <p>Užsakymų sąrašas šiuo metu tuščias.</p>
-          </div>
+          <EmptyState
+            title="Užsakymų nėra."
+            description="Sukurkite pirmą užsakymą paspausdami „Naujas užsakymas“."
+          />
         ) : (
           <div className="orders-list">
             {orders.map((order) => (
@@ -277,7 +278,10 @@ function OrdersPage() {
                   </div>
 
                   <div className="status-control">
-                    <label htmlFor={`order-status-${order.id}`}>Būsena</label>
+                    <div className="status-control-heading">
+                      <label htmlFor={`order-status-${order.id}`}>Būsena</label>
+                      <StatusBadge status={order.status} />
+                    </div>
                     <select
                       id={`order-status-${order.id}`}
                       value={order.status}
