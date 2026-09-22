@@ -1,4 +1,6 @@
-import { NavLink, Outlet } from 'react-router-dom'
+import { useState } from 'react'
+import { NavLink, Outlet, useNavigate } from 'react-router-dom'
+import { useAuth } from '../context/useAuth'
 
 const navigationItems = [
   { label: 'Klientai', path: '/customers' },
@@ -7,6 +9,23 @@ const navigationItems = [
 ]
 
 function AdminLayout() {
+  const navigate = useNavigate()
+  const { user, logout } = useAuth()
+  const [isLoggingOut, setIsLoggingOut] = useState(false)
+
+  const handleLogout = async () => {
+    setIsLoggingOut(true)
+
+    try {
+      await logout()
+    } catch {
+      // The local authentication state is cleared even if the request fails.
+    } finally {
+      navigate('/login', { replace: true })
+      setIsLoggingOut(false)
+    }
+  }
+
   return (
     <div className="app-shell">
       <header className="topbar">
@@ -19,7 +38,20 @@ function AdminLayout() {
             <p className="app-subtitle">Administravimo sistema</p>
           </div>
         </div>
-        <span className="header-context">Administravimo skydelis</span>
+        <div className="header-actions">
+          <div className="admin-identity">
+            <span>Administratorius</span>
+            <strong>{user?.username}</strong>
+          </div>
+          <button
+            className="logout-button"
+            type="button"
+            onClick={handleLogout}
+            disabled={isLoggingOut}
+          >
+            {isLoggingOut ? 'Atsijungiama...' : 'Atsijungti'}
+          </button>
+        </div>
       </header>
 
       <div className="workspace">
