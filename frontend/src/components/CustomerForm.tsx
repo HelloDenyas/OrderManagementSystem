@@ -12,9 +12,12 @@ type CustomerFormProps = {
 type FormErrors = {
   name?: string
   email?: string
+  phone?: string
 }
 
 const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+const namePattern = /^(?=.*\p{L})[\p{L}\p{M} '\u2019-]+$/u
+const phonePattern = /^\+?(?=.*[0-9])[0-9 ()-]+$/
 
 function CustomerForm({
   customer,
@@ -33,16 +36,25 @@ function CustomerForm({
 
     const trimmedName = name.trim()
     const trimmedEmail = email.trim()
+    const trimmedPhone = phone.trim()
     const nextErrors: FormErrors = {}
 
     if (!trimmedName) {
       nextErrors.name = 'Įveskite kliento vardą.'
+    } else if (!namePattern.test(trimmedName)) {
+      nextErrors.name =
+        'Vardas gali būti sudarytas tik iš raidžių, tarpų, brūkšnelių ir apostrofų.'
     }
 
     if (!trimmedEmail) {
       nextErrors.email = 'Įveskite el. pašto adresą.'
     } else if (!emailPattern.test(trimmedEmail)) {
       nextErrors.email = 'Įveskite galiojantį el. pašto adresą.'
+    }
+
+    if (trimmedPhone && !phonePattern.test(trimmedPhone)) {
+      nextErrors.phone =
+        'Telefono numeris gali turėti tik skaičius ir telefono numeriui įprastus simbolius.'
     }
 
     setErrors(nextErrors)
@@ -54,7 +66,7 @@ function CustomerForm({
     void onSubmit({
       name: trimmedName,
       email: trimmedEmail,
-      phone: phone.trim() || null,
+      phone: trimmedPhone || null,
     })
   }
 
@@ -139,7 +151,14 @@ function CustomerForm({
               value={phone}
               onChange={(event) => setPhone(event.target.value)}
               maxLength={50}
+              aria-invalid={Boolean(errors.phone)}
+              aria-describedby={errors.phone ? 'customer-phone-error' : undefined}
             />
+            {errors.phone && (
+              <p id="customer-phone-error" className="field-error">
+                {errors.phone}
+              </p>
+            )}
           </div>
 
           <div className="form-actions">
